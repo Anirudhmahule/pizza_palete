@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { getAddress } from '../../services/apiGeocoding';
-import { action } from '../order/CreateOrder';
 
 function getPosition() {
   return new Promise(function (resolve, reject) {
@@ -11,6 +10,7 @@ function getPosition() {
 export const fetchAddress = createAsyncThunk(
   'user/fetchAddress',
   async function () {
+    // 1) We get the user's geolocation position
     const positionObj = await getPosition();
     const position = {
       latitude: positionObj.coords.latitude,
@@ -48,14 +48,14 @@ const userSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(fetchAddress.fulfilled, (state, action) => {
-        state.status = 'idle';
         state.position = action.payload.position;
         state.address = action.payload.address;
+        state.status = 'idle';
       })
       .addCase(fetchAddress.rejected, (state, action) => {
         state.status = 'error';
         state.error =
-          'There was a problem getting your address. Make sure to fill this field';
+          'There was a problem getting your address, Make sure to fill this field!';
       }),
 });
 
